@@ -1,7 +1,26 @@
+body {
+  margin: 0 auto;
+}
 
+h1 {
+  margin-top: 50px;
+  margin-left: 110px;
+}
+
+.new-form {
+  margin-left: 110px;
+}
+
+.map-container {
+  height: 402px;
+  width: 962px;
+  background-color: #808080;
+  border: 1px solid #808080;
+  margin: 0 auto;
+}
 
 #map-canvas {
   height: 400px;
   width: 960px;
-  background-color: #808080;
+  margin: 0 auto;
 }

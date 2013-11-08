@@ -14,8 +14,8 @@ app.createUser = function(e) {
     user: {
       name: name,
       email: email
-    }
-  };
+  }
+};
 
   // ajax request to add data userParams into the data
   $.ajax({
@@ -71,13 +71,14 @@ app.addPin = function() {
 // document ready
 $(document).ready(function() {
 
-// creates map when dom has loaded
+  // creates map when dom has loaded
   app.makeMap();
 
-// when you click on the submit button, it triggers the app.createUser
+  // when you click on the submit button, it triggers the app.createUser
   $(".submit").on("click", app.createUser);
 
   // eventlistener when drop pin button is clicked
   $("#drop-pin").on("click", app.addPin);
+
 });
 
