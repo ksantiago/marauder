@@ -48,8 +48,9 @@ app.displayUser = function(user) {
 
 app.makeMap = function() {
   var mapOptions = {
-    center: new google.maps.LatLng(-34.397, 150.644),
-    zoom: 8,
+    // this takes your current position - as def in ready fn and drops into the center of the map
+    center: new google.maps.LatLng(app.lat, app.lng),
+    zoom: 12,
     mapTypeId: google.maps.MapTypeId.ROADMAP
   };
 
@@ -57,7 +58,8 @@ app.makeMap = function() {
 };
 
 app.addPin = function() {
-  var myLatlng = new google.maps.LatLng(-25.363882,131.044922);
+  // this takes your current position (as defined in the ready function and drops into the variable)
+  var myLatlng = new google.maps.LatLng(app.lat, app.lng);
 
   var marker = new google.maps.Marker({
     position: myLatlng,
@@ -68,11 +70,18 @@ app.addPin = function() {
 };
 
 
+
 // document ready
 $(document).ready(function() {
 
+  // this tells your browser to look up your current geolocation and grab those coords
+  navigator.geolocation.getCurrentPosition(function(position){
+    app.lat = position.coords.latitude;
+    app.lng = position.coords.longitude;
+    app.makeMap();
+  });
   // creates map when dom has loaded
-  app.makeMap();
+
 
   // when you click on the submit button, it triggers the app.createUser
   $(".submit").on("click", app.createUser);
