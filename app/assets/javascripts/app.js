@@ -23,7 +23,7 @@ app.createUser = function(e) {
   // ajax request to add data userParams into the data
   $.ajax({
     type: "POST",
-    url: "http://localhost:3000/users.json",
+    url: "users.json",
     data: userParams
   }).done(function(user) {
     // do something with the response
