@@ -1,14 +1,20 @@
-body {
+.container {
   margin: 0 auto;
+  width: 1200px;
 }
 
 h1 {
   margin-top: 50px;
-  margin-left: 110px;
+  margin-left: 115px;
 }
 
 .new-form {
-  margin-left: 110px;
+  margin-left: 120px;
+}
+
+#drop-pin {
+  margin-left: 120px;
+  margin-bottom: 10px;
 }
 
 .map-container {
