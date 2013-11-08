@@ -6,14 +6,17 @@ app.createUser = function(e) {
   // pulling out the input values from the form
   var name = $("form").find("input[name='name']").val();
   var email = $("form").find("input[name='email']").val();
+  var userLat = app.lat;
+  var userLng = app.lng;
 
-  console.log(name);
-  console.log(email);
+
   // this is the params that will go into the ajax
   var userParams = {
     user: {
       name: name,
-      email: email
+      email: email,
+      lat: app.Lat,
+      lng: app.Lng
   }
 };
 
@@ -22,23 +25,14 @@ app.createUser = function(e) {
     type: "POST",
     url: "http://localhost:3000/users.json",
     data: userParams
-  }).done(function(data) {
+  }).done(function(user) {
     // do something with the response
+    app.user = user;
     console.log('got back this response');
-    console.log(data);
+    console.log(user);
+    app.updateLocation();
   });
 };
-
-  // ajax request to get specific student's data
-//   var userUrl = "http://localhost:3000/users/" + newUser.id + ".json";
-
-//   $.ajax({
-//     type: "GET",
-//     url: userUrl
-//   }).done(app.displayUser);
-// });
-
-  // });
 
 app.displayUser = function(user) {
   var name = user.name;
@@ -51,7 +45,10 @@ app.makeMap = function() {
     // this takes your current position - as def in ready fn and drops into the center of the map
     center: new google.maps.LatLng(app.lat, app.lng),
     zoom: 12,
-    mapTypeId: google.maps.MapTypeId.ROADMAP
+    mapTypeId: google.maps.MapTypeId.ROADMAP,
+    styles: [{featureType:'road',elementType:'geometry',stylers:[{'visibility':'simplified'}]},{featureType:'road.arterial',stylers:[{hue:149},{saturation:-78},{lightness:0}]},{featureType:'road.highway',stylers:[{hue:-31},{saturation:-40},{lightness:2.8}]},{featureType:'poi',elementType:'label',stylers:[{'visibility':'off'}]},{featureType:'landscape',stylers:[{hue:163},{saturation:-26},{lightness:-1.1}]},{featureType:'transit',stylers:[{'visibility':'off'}]},{featureType:'water',stylers:[{hue:3},{saturation:-24.24},{lightness:-38.57}]}]
+
+    // styles: style_array_from_above_here
   };
 
   map = new google.maps.Map(document.getElementById("map-canvas"), mapOptions);
@@ -69,18 +66,49 @@ app.addPin = function() {
   marker.setMap(map);
 };
 
+app.updateLocation = function() {
+
+  // continuously checks your position and calls the function
+  // watchPosition is an evenlistener on geoloc so whenever user moves, it triggers and calls success function
+  navigator.geolocation.watchPosition(function(position){
+    console.log(position);
+    app.userLat = position.coords.latitude;
+    app.userLng = position.coords.longitude;
+
+  // this is the params that will go into the ajax
+  var userParams = {
+    user: {
+      lat: app.userLat,
+      lng: app.userLng
+    }
+  };
+
+  var updateUserUrl = "users/" + app.user.id;
+  debugger;
+    $.ajax({
+      dataType: "json",
+      type: "PUT",
+      url: updateUserUrl,
+      data: userParams
+    }).done(function(data){
+      console.log(data);
+    });
+  });
+
+};
+
 
 
 // document ready
 $(document).ready(function() {
 
   // this tells your browser to look up your current geolocation and grab those coords
+  // then creats map when it knows your geolocation
   navigator.geolocation.getCurrentPosition(function(position){
     app.lat = position.coords.latitude;
     app.lng = position.coords.longitude;
     app.makeMap();
   });
-  // creates map when dom has loaded
 
 
   // when you click on the submit button, it triggers the app.createUser

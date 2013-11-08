@@ -35,4 +35,17 @@ class UsersController < ApplicationController
       format.json { render json: @user }
     end
   end
+
+  def update
+    binding.pry
+    @user = User.find(params[:id])
+
+    respond_to do |format|
+      if @user.update_attributes(params[:user])
+        format.json { head :no_content }
+      else
+        format.json { render json: @user.errors, status: unprocessable_entity }
+      end
+    end
+  end
 end
