@@ -25,7 +25,7 @@ app.createUser = function(e) {
   }).done(function(user) {
     // do something with the response
     app.user = user;
-    console.log('got back this response');
+    console.log('response:');
     console.log(user);
     app.updateLocation();
   });
@@ -39,13 +39,21 @@ app.displayUser = function(user) {
 
 app.makeMap = function() {
   var mapOptions = {
-    // this takes your current position - as def in ready fn and drops into the center of the map
+    // this takes your current position - as def in ready fn and defnes center of the map
     center: new google.maps.LatLng(app.userLat, app.userLng),
     zoom: 12,
     mapTypeId: google.maps.MapTypeId.ROADMAP,
-    styles: [{featureType:'road',elementType:'geometry',stylers:[{'visibility':'simplified'}]},{featureType:'road.arterial',stylers:[{hue:149},{saturation:-78},{lightness:0}]},{featureType:'road.highway',stylers:[{hue:-31},{saturation:-40},{lightness:2.8}]},{featureType:'poi',elementType:'label',stylers:[{'visibility':'off'}]},{featureType:'landscape',stylers:[{hue:163},{saturation:-26},{lightness:-1.1}]},{featureType:'transit',stylers:[{'visibility':'off'}]},{featureType:'water',stylers:[{hue:3},{saturation:-24.24},{lightness:-38.57}]}]
-
-    // styles: style_array_from_above_here
+    // styles is an array of objects that allows you to change what the map looks like
+    styles: [
+    {featureType:'road',elementType:'geometry',stylers:[{'visibility':'simplified'}]},
+    {featureType:'road.arterial',stylers:[{hue:149},{saturation:-78},{lightness:0}]},
+    {featureType:'road.highway',stylers:[{hue:-31},{saturation:-40},{lightness:2.8}]},
+    {featureType:'poi',elementType:'label',stylers:[{'visibility':'off'}]},
+    {featureType:'landscape',stylers:[{hue:163},{saturation:-26},{lightness:-1.1}]},
+    {featureType:'transit',stylers:[{'visibility':'off'}]},
+    {featureType:'water',stylers:[{hue:3},{saturation:-24.24},
+    {lightness:-38.57}]}
+    ]
   };
 
   map = new google.maps.Map(document.getElementById("map-canvas"), mapOptions);
@@ -97,17 +105,33 @@ app.updateLocation = function() {
 
 };
 
+app.markUsersTrack = function() {
+  $.ajax({
+    dataType: "json",
+    type: "GET",
+    url: "/users"
+  }).done(function(users){
+    $.each(users,function(i, user){
+      app.userLat = user.lat;
+      app.userLng = user.lng;
+      app.addPin();
+    });
+
+  });
+};
+
 
 
 // document ready
 $(document).ready(function() {
 
   // this tells your browser to look up your current geolocation and grab those coords
-  // then creats map when it knows your geolocation
   navigator.geolocation.getCurrentPosition(function(position){
     app.userLat = position.coords.latitude;
     app.userLng = position.coords.longitude;
-    app.makeMap();
+    // then creats map when it knows your geolocation
+    app.makeMap();
+
   // eventlistener when drop pin button is clicked
     $("#drop-pin").on("click", app.addPin);
   });
@@ -116,6 +140,7 @@ $(document).ready(function() {
   // when you click on the submit button, it triggers the app.createUser
   $(".submit").on("click", app.createUser);
 
+  setInterval(app.watchUsers, 1000);
 
 });
 
